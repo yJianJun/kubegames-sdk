@@ -1,0 +1,125 @@
+//protoc --go_out=plugins=grpc:. msg.proto
+syntax = "proto3";
+package message;
+
+enum MSGTYPE //主从消息类型
+{
+    VOID = 0; //无用
+    MAINCMD = 1; //框架消息
+    SUBCMD = 2; //逻辑消息
+}
+
+// 错误类型
+enum ErrorType
+{
+    VOID3 = 0;
+    LoginFaild = 1; //登陆失败
+    MatchFaild = 2; //匹配失败
+    ServefError = 3; //服务器错误
+    ServerFull = 4; //服务器满了
+    EntranceRestrict = 5; //用户不满足入房条件
+    Kicked = 6; //用户被踢
+    ShutDown = 7; //服务器关闭
+    GameDown = 40807; //游戏下线
+    GameMaintenance = 40808; //游戏维护
+    AgentClose = 44444; //业主下线
+    UserBlock = 40403; //用户冻结
+}
+
+enum MSGKIND //消息种类
+{
+    VOID1 = 0; //无用
+    LOGIN = 1; //登陆消息
+    MATCH = 2; //匹配消息
+    READY = 3; //准备消息
+    START = 4; //开赛消息
+    END = 5;   //结束消息
+    LEAVE = 6; //离开消息
+    GAME = 7; //游戏消息
+    ROBOT = 8; //机器人登陆消息
+    CONFIG =9; //配置消息
+    ERROR = 10; //错误消息
+    HANDSEL = 11; //奖金池信息
+    BALANCEREQ = 12; //余额请求
+    BALANCE = 13; //余额推送
+}
+
+message FrameMsg{
+    int32 mainCmd = 1;  //主消息协议
+    int32 subCmd = 2;   //次消息协议
+    bytes buff = 3;     //数据流
+    int64 Time = 4;     //发出时间
+}
+
+//错误消息
+message S2CGeneralError{
+    ErrorType eType = 1; //错误类型
+    string descript = 2; //描述
+}
+
+//用户准备
+message S2CReady{
+    //用户ID
+    int64 userId = 1;
+}
+
+//用户余额
+message S2CBlance{
+    int64 balance = 1;
+}
+
+//奖金池
+message Handsel {
+    int64 roomid = 1;
+    int64 curr = 2;  //当前值
+}
+
+//奖金池信息
+message S2CHandsel{
+    repeated Handsel Handsels = 1;
+}
+
+
+//用户进入
+message S2CEnter{
+    int64 userId = 1;  //用户ID
+    string head = 2; //头像url
+    int64 gold = 3;   //用户金币
+    string nickName = 4; //用户昵称
+    string sign = 5;   //用户签名
+    int32 tableId = 6;  //桌子号
+    int32 setId = 7;   //椅子号
+}
+
+//用户离开
+message S2CLeave{
+    //用户ID
+    int64 userId = 1;
+}
+
+//跑马灯配置
+message MarqueeConfig {
+    int64 platformId = 1;
+    int64 amountLimit = 2;
+    string content = 3;
+    string roomId = 4;
+    int64 ruleId = 5;
+    string specialCondition = 6;
+}
+
+//跑马灯配置
+message S2CMarqueeConfigs {
+    repeated MarqueeConfig MarqueeConfigs = 1;
+}
+
+
+message GameLog {
+    int64 userId = 2;
+    string content = 3;
+}
+
+message C2SGameLog {
+    string matchId = 1;
+    int64 gameId = 2;
+    repeated GameLog GameLogs = 3;
+}
