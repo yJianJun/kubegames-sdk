@@ -284,7 +284,7 @@ func NewTable(platform platform.Platform, id int64, roomProb int32, config *room
 	}
 
 	//set chairt
-	for n := 0; n <= int(t.config.MaxPeople); n++ {
+	for n := 0; n < int(t.config.MaxPeople); n++ {
 		t.chairs[n] = n
 	}
 	return t
@@ -507,7 +507,7 @@ func (t *Table) GetRobot(number uint32, minBalance, maxBalance int64) error {
 		}
 
 		//user sit down
-		if t.handler.OnActionUserSitDown(robot, 0, t.config.AdviceConfig) != SitDownOk {
+		if t.handler.OnActionUserSitDown(robot, robot.GetChairID(), t.config.AdviceConfig) != SitDownOk {
 			//delete robot
 			if _, err := t.platform.PlayerLeaveGame(context.Background(), robot.PlayerID, true); err != nil {
 				log.Warnf("player %d leave game error %s", robot.PlayerID, err.Error())
@@ -978,7 +978,7 @@ func (t *Table) onMatch(job *Job) {
 	}
 
 	//user sit down
-	switch t.handler.OnActionUserSitDown(job.player, 0, t.config.AdviceConfig) {
+	switch t.handler.OnActionUserSitDown(job.player, job.player.GetChairID(), t.config.AdviceConfig) {
 	case SitDownOk:
 		log.Tracef("platform[%d] room[%d] table[%d] match player[%v] success", t.config.PlatformID, t.config.RoomID, t.id, job.player)
 
