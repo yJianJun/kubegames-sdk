@@ -279,10 +279,9 @@ type PlayerInterface interface {
 		*@param:score		积分
 		*@param:tax			税收（万分比）
 		*返回值
-		@return int64 收取的税收
 		@return int64 扣完税的钱
 	*/
-	SetScore(gameNum string, score int64, tax int64) (int64, int64)
+	SetScore(gameNum string, score int64, tax int64) int64
 
 	/*
 	*获取椅子ID
@@ -444,10 +443,9 @@ func (p *Player) GetScore() int64 {
 	*@param:score		积分
 	*@param:tax			税收（万分比）
 	*返回值
-	@return int64 收取的税收
 	@return int64 扣完税的钱
 */
-func (p *Player) SetScore(gameNum string, score int64, tax int64) (int64, int64) {
+func (p *Player) SetScore(gameNum string, score int64, tax int64) int64 {
 	p.lock.Lock()
 	defer p.lock.Unlock()
 
@@ -474,7 +472,7 @@ func (p *Player) SetScore(gameNum string, score int64, tax int64) (int64, int64)
 
 	//set balance
 	p.Balance = after
-	return taxMoney, score
+	return score
 }
 
 /*
